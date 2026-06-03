@@ -10,9 +10,11 @@ import {
   ChevronDown, 
   Info,
   ExternalLink,
-  Archive
+  Archive,
+  ShieldCheck
 } from "lucide-react";
 import JSZip from "jszip";
+import UploadGuard from "./UploadGuard";
 
 interface CodeExporterProps {
   settings: ThemeSettings;
@@ -28,6 +30,7 @@ export default function CodeExporter({
   const [selectedFile, setSelectedFile] = useState<string>("layout/theme.liquid");
   const [copied, setCopied] = useState<boolean>(false);
   const [downloadingZip, setDownloadingZip] = useState<boolean>(false);
+  const [activeViewMode, setActiveViewMode] = useState<"code" | "guard">("code");
 
   const getBorderRadiusValue = () => {
     switch (settings.borderRadius) {
@@ -1757,30 +1760,59 @@ ${settings.logoText}-Theme-Source/
   return (
     <div id="shopify-code-exporter" className="h-full bg-[#0A0A0A] border-t md:border-t-0 md:border-l border-zinc-850 flex flex-col select-none text-zinc-300 font-sans">
       {/* Title bar banner */}
-      <div className="p-4 border-b border-zinc-850 bg-[#070707] flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-[#D1FF26] flex items-center justify-center text-black font-black" style={{ backgroundColor: settings.accentColor }}>
-            <Terminal className="w-4 h-4 text-black" />
+      <div className="p-4 border-b border-zinc-850 bg-[#070707] flex flex-col md:flex-row gap-3 items-start md:items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-[#D1FF26] flex items-center justify-center text-black font-black" style={{ backgroundColor: settings.accentColor }}>
+              <Terminal className="w-4 h-4 text-black" />
+            </div>
+            <div className="text-left">
+              <span className="text-[9px] font-mono text-zinc-500 font-bold uppercase tracking-[0.2em] block">Shopify Visual Sync</span>
+              <h2 className="text-xs font-black uppercase text-white leading-none">Theme Package Exporter</h2>
+            </div>
           </div>
-          <div className="text-left">
-            <span className="text-[9px] font-mono text-zinc-500 font-bold uppercase tracking-[0.2em] block">Shopify Visual Sync</span>
-            <h2 className="text-xs font-black uppercase text-white leading-none">Theme Package Exporter</h2>
+
+          {/* View Mode Toggle Tabs */}
+          <div className="flex bg-[#121212] p-0.5 border border-zinc-850 font-mono text-[10px]">
+            <button
+              onClick={() => setActiveViewMode("code")}
+              className={`py-1.5 px-3 uppercase tracking-wider transition-all cursor-pointer ${
+                activeViewMode === "code" 
+                  ? "bg-amber-400 text-black font-black" 
+                  : "text-zinc-400 hover:text-white"
+              }`}
+            >
+              Liquid Code Explorer
+            </button>
+            <button
+              onClick={() => setActiveViewMode("guard")}
+              className={`py-1.5 px-3 uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeViewMode === "guard" 
+                  ? "bg-amber-400 text-black font-black" 
+                  : "text-zinc-400 hover:text-white"
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Gatekeeper Upload Guard</span>
+            </button>
           </div>
         </div>
 
         <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-          <button
-            onClick={() => triggerDownload(selectedFile.split("/").pop() || "theme-file.txt", activeContent)}
-            className="flex-1 sm:flex-initial text-[10px] bg-zinc-900 hover:bg-zinc-800 hover:text-white px-3 py-1.5 rounded-none font-bold uppercase tracking-widest border border-zinc-800 flex items-center justify-center gap-2 cursor-pointer text-zinc-300 font-mono"
-          >
-            <FileDown className="w-3.5 h-3.5 text-[#D1FF26]" style={{ color: settings.accentColor }} />
-            <span>Download File</span>
-          </button>
+          {activeViewMode === "code" && (
+            <button
+              onClick={() => triggerDownload(selectedFile.split("/").pop() || "theme-file.txt", activeContent)}
+              className="flex-1 sm:flex-initial text-[10px] bg-zinc-900 hover:bg-zinc-800 hover:text-white px-3 py-1.5 rounded-none font-bold uppercase tracking-widest border border-zinc-800 flex items-center justify-center gap-2 cursor-pointer text-zinc-300 font-mono"
+            >
+              <FileDown className="w-3.5 h-3.5 text-[#D1FF26]" style={{ color: settings.accentColor }} />
+              <span>Download File</span>
+            </button>
+          )}
 
           <button
             onClick={triggerDownloadZip}
             disabled={downloadingZip}
-            className="flex-1 sm:flex-initial text-[10px] px-4 py-1.5 rounded-none font-bold uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer text-black hover:opacity-90 transition-all font-mono animate-pulse"
+            className="flex-1 sm:flex-initial text-[10px] px-4 py-1.5 rounded-none font-bold uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer text-black hover:opacity-90 transition-all font-mono"
             style={{ backgroundColor: settings.accentColor || "#D1FF26" }}
           >
             {downloadingZip ? (
@@ -1798,102 +1830,111 @@ ${settings.logoText}-Theme-Source/
         </div>
       </div>
 
-      {/* Grid view containing layout */}
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
-        
-        {/* Sidebar file tree panel */}
-        <div className="md:col-span-4 border-b md:border-b-0 md:border-r border-zinc-850 bg-zinc-950/20 p-3 space-y-4 overflow-y-auto custom-scroll">
-          <div className="space-y-1.5">
-            <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest block text-left">Liquid Theme Directories</span>
-            
-            <div className="space-y-2">
-              <div className="flex items-center gap-1.5 text-xs text-white uppercase font-bold tracking-tight text-left">
-                <FolderOpen className="w-3.5 h-3.5 text-[#D1FF26]" style={{ color: settings.accentColor }} />
-                <span>${settings.logoText.toLowerCase()}-boutique/</span>
-              </div>
+      {activeViewMode === "code" ? (
+        /* Grid view containing layout */
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
+          
+          {/* Sidebar file tree panel */}
+          <div className="md:col-span-4 border-b md:border-b-0 md:border-r border-zinc-850 bg-zinc-950/20 p-3 space-y-4 overflow-y-auto custom-scroll">
+            <div className="space-y-1.5">
+              <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest block text-left">Liquid Theme Directories</span>
+              
+              <div className="space-y-2">
+                <div className="flex items-center gap-1.5 text-xs text-white uppercase font-bold tracking-tight text-left">
+                  <FolderOpen className="w-3.5 h-3.5 text-[#D1FF26]" style={{ color: settings.accentColor }} />
+                  <span>${settings.logoText.toLowerCase()}-boutique/</span>
+                </div>
 
-              {/* Recursive simulated folder nodes */}
-              <div className="pl-3.5 space-y-1 text-left">
-                {["layout", "templates", "sections", "snippets", "assets", "config", "root"].map((dirName) => {
-                  const items = filesList.filter(f => f.dir === dirName);
-                  if (items.length === 0) return null;
+                {/* Recursive simulated folder nodes */}
+                <div className="pl-3.5 space-y-1 text-left">
+                  {["layout", "templates", "sections", "snippets", "assets", "config", "root"].map((dirName) => {
+                    const items = filesList.filter(f => f.dir === dirName);
+                    if (items.length === 0) return null;
 
-                  return (
-                    <div key={dirName} className="space-y-1">
-                      <div className="flex items-center gap-1 text-[10px] text-zinc-500 font-mono uppercase tracking-wider">
-                        <ChevronDown className="w-3 h-3 text-zinc-650" />
-                        <span>{dirName === "root" ? "config-root/" : `${dirName}/`}</span>
+                    return (
+                      <div key={dirName} className="space-y-1">
+                        <div className="flex items-center gap-1 text-[10px] text-zinc-500 font-mono uppercase tracking-wider">
+                          <ChevronDown className="w-3 h-3 text-zinc-650" />
+                          <span>{dirName === "root" ? "config-root/" : `${dirName}/`}</span>
+                        </div>
+
+                        <div className="pl-3.5 space-y-0.5">
+                          {items.map((file) => {
+                            const isActive = selectedFile === file.path;
+                            return (
+                              <button
+                                key={file.path}
+                                onClick={() => setSelectedFile(file.path)}
+                                className={`w-full text-left flex items-center gap-2 py-1 px-1.5 rounded transition duration-150 cursor-pointer text-xs font-mono truncate ${
+                                  isActive 
+                                    ? "bg-amber-500/10 text-amber-350 font-black border-l-2 border-amber-500 rounded-none" 
+                                    : "text-zinc-400 hover:text-white hover:bg-zinc-800/40"
+                                }`}
+                              >
+                                <FileCode className={`w-3.5 h-3.5 ${isActive ? "text-amber-500" : "text-zinc-650"}`} />
+                                <span>{file.name}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
+                    );
+                  })}
+                </div>
 
-                      <div className="pl-3.5 space-y-0.5">
-                        {items.map((file) => {
-                          const isActive = selectedFile === file.path;
-                          return (
-                            <button
-                              key={file.path}
-                              onClick={() => setSelectedFile(file.path)}
-                              className={`w-full text-left flex items-center gap-2 py-1 px-1.5 rounded transition duration-150 cursor-pointer text-xs font-mono truncate ${
-                                isActive 
-                                  ? "bg-amber-500/10 text-amber-350 font-black border-l-2 border-amber-500 rounded-none" 
-                                  : "text-zinc-400 hover:text-white hover:bg-zinc-800/40"
-                              }`}
-                            >
-                              <FileCode className={`w-3.5 h-3.5 ${isActive ? "text-amber-500" : "text-zinc-650"}`} />
-                              <span>{file.name}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
               </div>
+            </div>
 
+            <div className="p-3 bg-zinc-950/40 border border-zinc-900 rounded-none text-left space-y-2 text-zinc-400 leading-normal font-sans uppercase tracking-wider">
+              <div className="flex gap-1.5 items-center text-white font-bold text-[10px]">
+                <Info className="w-3.5 h-3.5 text-[#D1FF26]" style={{ color: settings.accentColor }} />
+                <span>Developer Insight</span>
+              </div>
+              <p className="text-[9px] text-zinc-500 font-mono normal-case leading-relaxed">
+                These modular files align perfectly with Shopify OS 2.0 conventions. Feel free to copy them directly or use the ZIP layout described in INSTALLATION.md.
+              </p>
             </div>
           </div>
 
-          <div className="p-3 bg-zinc-950/40 border border-zinc-900 rounded-none text-left space-y-2 text-zinc-400 leading-normal font-sans uppercase tracking-wider">
-            <div className="flex gap-1.5 items-center text-white font-bold text-[10px]">
-              <Info className="w-3.5 h-3.5 text-[#D1FF26]" style={{ color: settings.accentColor }} />
-              <span>Developer Insight</span>
+          {/* Code representation file previewer */}
+          <div className="md:col-span-8 flex flex-col overflow-hidden bg-black select-text">
+            <div className="p-2.5 border-b border-zinc-900 bg-[#070707] flex items-center justify-between px-4">
+              <span className="text-[10px] font-mono text-zinc-500 select-all">{selectedFile}</span>
+              
+              <button
+                onClick={() => handleCopy(activeContent)}
+                className="text-[10px] bg-[#0A0A0A] hover:bg-zinc-900 hover:text-white px-3 py-1.5 rounded-none font-mono border border-zinc-800 flex items-center gap-1.5 cursor-pointer text-zinc-300 font-bold"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>COPIED!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5 text-[#D1FF26]" style={{ color: settings.accentColor }} />
+                    <span>COPY CODE</span>
+                  </>
+                )
+              }
+              </button>
             </div>
-            <p className="text-[9px] text-zinc-500 font-mono normal-case leading-relaxed">
-              These modular files align perfectly with Shopify OS 2.0 conventions. Feel free to copy them directly or use the ZIP layout described in INSTALLATION.md.
-            </p>
+
+            <div className="flex-1 overflow-auto p-5 text-left bg-[#050505] selection:bg-[#333] selection:text-white custom-scroll select-text">
+              <pre className="font-mono text-[11px] leading-relaxed text-zinc-300 whitespace-pre-wrap select-text selection:bg-amber-500/30">
+                {activeContent}
+              </pre>
+            </div>
           </div>
+
         </div>
-
-        {/* Code representation file previewer */}
-        <div className="md:col-span-8 flex flex-col overflow-hidden bg-black select-text">
-          <div className="p-2.5 border-b border-zinc-900 bg-[#070707] flex items-center justify-between px-4">
-            <span className="text-[10px] font-mono text-zinc-500 select-all">{selectedFile}</span>
-            
-            <button
-              onClick={() => handleCopy(activeContent)}
-              className="text-[10px] bg-[#0A0A0A] hover:bg-zinc-900 hover:text-white px-3 py-1.5 rounded-none font-mono border border-zinc-800 flex items-center gap-1.5 cursor-pointer text-zinc-300 font-bold"
-            >
-              {copied ? (
-                <>
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>COPIED!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3.5 h-3.5 text-[#D1FF26]" style={{ color: settings.accentColor }} />
-                  <span>COPY CODE</span>
-                </>
-              )}
-            </button>
-          </div>
-
-          <div className="flex-1 overflow-auto p-5 text-left bg-[#050505] selection:bg-[#333] selection:text-white custom-scroll select-text">
-            <pre className="font-mono text-[11px] leading-relaxed text-zinc-300 whitespace-pre-wrap select-text selection:bg-amber-500/30">
-              {activeContent}
-            </pre>
-          </div>
-        </div>
-
-      </div>
+      ) : (
+        <UploadGuard 
+          settings={settings}
+          sections={sections}
+          getThemeFileContent={getFileContent}
+        />
+      )}
     </div>
   );
 }
