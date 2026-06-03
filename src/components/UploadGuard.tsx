@@ -412,46 +412,111 @@ export default function UploadGuard({
           >
             {/* Deploying Manual instructions stepper */}
             <div className="space-y-4">
-              <div className="border-b border-zinc-900 pb-3">
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                  <Terminal className="w-4 h-4 text-amber-400" />
-                  <span>Step-by-Step GitHub Branch / ZIP Blueprint Sync Guide</span>
-                </h4>
-                <p className="text-[11px] text-zinc-500 font-mono mt-1 normal-case leading-relaxed">
-                  Avoid common integration snags when syncing your new theme files with active online storefront branch portals.
-                </p>
+              <div className="border-b border-zinc-900 pb-3 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <Terminal className="w-4 h-4 text-amber-400" />
+                    <span>Shopify Theme Sanitizer & Sync Blueprint</span>
+                  </h4>
+                  <p className="text-[11px] text-zinc-500 font-mono mt-1 normal-case leading-relaxed">
+                    Verify the difference between this sandbox visual customizer (Vite / React App) and the raw Shopify Liquid ZIP bundle.
+                  </p>
+                </div>
+                
+                {/* Visual Distinction Badge */}
+                <div className="px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 text-[9px] font-mono text-amber-400 max-w-sm">
+                  💡 <strong>EXPORTER TRUTH:</strong> Our <span className="text-white">"Download Theme"</span> ZIP automatically exports raw, pure Shopify Liquid. Never copy raw customizer node files!
+                </div>
               </div>
 
               {/* Stepper block */}
-              <div className="space-y-3 font-mono text-[11px]">
+              <div className="space-y-4 font-mono text-[11px]">
                 
                 {/* Step 1 card */}
                 <div className="p-4 border border-zinc-900 bg-[#080808] space-y-3">
                   <div className="flex items-center gap-2 border-b border-zinc-900 pb-2">
-                    <span className="text-[10px] text-amber-400 font-extrabold bg-amber-500/10 px-2.5 py-1 border border-amber-500/20">STEP 1</span>
-                    <h5 className="text-xs font-bold text-white uppercase">Eliminate Nested Subfolders</h5>
+                    <span className="text-[10px] text-zinc-900 font-black bg-amber-400 px-2.5 py-0.5">STEP 1</span>
+                    <h5 className="text-xs font-bold text-white uppercase">Dig Inside the Folders (The #1 Cause of Rejection)</h5>
                   </div>
                   <p className="text-zinc-400 leading-normal normal-case">
-                    When importing or using automated GitHub Actions pulls, verify that the main folders are placed on the absolute level of your branch directory.
+                    When pushing files to GitHub or unzipping an AI download, the files often get trapped inside a parent workspace folder (for example: <code className="text-red-400">outpost-theme/layout/...</code> or <code className="text-red-400">main/assets/...</code>).
                   </p>
-                  <div className="p-3 bg-zinc-950 border border-zinc-900 text-[10px] space-y-1.5">
-                    <div className="text-zinc-400">❌ <strong className="text-zinc-200">Avoid:</strong> <code className="text-red-400 bg-red-950/20 px-1 font-mono">my-shopify-sandbox/outpost-theme-files/layout/theme.liquid</code></div>
-                    <div className="text-zinc-400">✅ <strong className="text-zinc-200">Correct:</strong> <code className="text-emerald-400 bg-emerald-950/20 px-1 font-mono">my-shopify-sandbox/layout/theme.liquid</code></div>
+                  <strong className="text-amber-400 uppercase text-[9px] block">⚠️ Shopify cannot read subfolders at the root level!</strong>
+                  <p className="text-zinc-400 leading-normal normal-case">
+                    Your folder structure must be exposed directly on the main screen of your GitHub branch, like so:
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[10px]">
+                    <div className="p-3 bg-red-950/10 border border-red-900/30">
+                      <span className="text-red-400 uppercase font-black text-[9px] block mb-1">❌ Incorrect (Shopify Stops Here & Fails):</span>
+                      <pre className="text-zinc-550 leading-tight">
+{`📁 Your-Repo-Name (Main Branch)
+└── 📁 outpost-theme-download  <-- STOPS HERE
+    ├── 📁 layout/
+    ├── 📁 templates/
+    └── 📁 sections/`}
+                      </pre>
+                    </div>
+
+                    <div className="p-3 bg-emerald-950/10 border border-emerald-900/30">
+                      <span className="text-emerald-400 uppercase font-black text-[9px] block mb-1">✅ Correct (Valid Root Structure):</span>
+                      <pre className="text-zinc-400 leading-tight">
+{`📁 Your-Repo-Name (Main Branch)
+├── 📁 assets/
+├── 📁 config/
+├── 📁 layout/
+├── 📁 sections/
+├── 📁 snippets/
+└── 📁 templates/`}
+                      </pre>
+                    </div>
+                  </div>
+                  <div className="p-2.5 bg-zinc-950 border border-zinc-900 text-zinc-500 text-[10px] italic normal-case">
+                    <strong>The Fix:</strong> Move all the core theme folders out of any parent folder and drop them directly into the main root directory of your GitHub repository, then commit the changes.
                   </div>
                 </div>
 
                 {/* Step 2 card */}
                 <div className="p-4 border border-zinc-900 bg-[#080808] space-y-3">
                   <div className="flex items-center gap-2 border-b border-zinc-900 pb-2">
-                    <span className="text-[10px] text-amber-400 font-extrabold bg-amber-500/10 px-2.5 py-1 border border-amber-500/20">STEP 2</span>
-                    <h5 className="text-xs font-bold text-white uppercase">Validate theme.liquid Headers</h5>
+                    <span className="text-[10px] text-zinc-900 font-black bg-amber-400 px-2.5 py-0.5">STEP 2</span>
+                    <h5 className="text-xs font-bold text-white uppercase">Clean It Up (The De-clutter Process)</h5>
                   </div>
                   <p className="text-zinc-400 leading-normal normal-case">
-                    Make sure that <code className="text-zinc-350 bg-zinc-900 px-1">layout/theme.liquid</code> includes both critical tags. Copy this fallback code if you are starting from scratch recursively:
+                    This browser-based Customizer uses a Node.js/TypeScript configuration (<code className="text-zinc-200">package.json</code>, <code className="text-zinc-205">vite.config.ts</code>, <code className="text-zinc-200">server.ts</code>) to preview styling modules live. However, Shopify has absolutely no idea what to do with these app configuration files.
+                  </p>
+                  <p className="text-zinc-400 leading-normal normal-case">
+                    If you copy theme files from your visual sandbox directory manually into your GitHub store branch:
+                  </p>
+                  <div className="p-3 bg-zinc-950 border border-zinc-950 space-y-2">
+                    <div className="flex items-start gap-1.5 text-zinc-400">
+                      <span className="text-red-500 font-bold font-mono">🗑️</span>
+                      <span><strong>Delete Everything Else:</strong> Remove <code className="text-red-400 bg-red-955/20 px-1 font-mono">package.json</code>, <code className="text-red-400 bg-red-955/20 px-1 font-mono">vite.config.ts</code>, <code className="text-red-400 bg-red-955/20 px-1 font-mono">tsconfig.json</code>, <code className="text-red-400 bg-red-955/20 px-1 font-mono">server.ts</code>, and node-related setup directories entirely from your Shopify connection branch.</span>
+                    </div>
+                    <div className="flex items-start gap-1.5 text-zinc-400">
+                      <span className="text-emerald-500 font-bold font-mono">📦</span>
+                      <span><strong>Move Theme Files:</strong> Drag layout, templates, sections, snippets, and assets safely out of any <code className="text-[#D1FF26]">src/</code> sub-containers and drop them directly at the root.</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 3 card */}
+                <div className="p-4 border border-zinc-900 bg-[#080808] space-y-3">
+                  <div className="flex items-center gap-2 border-b border-zinc-900 pb-2">
+                    <span className="text-[10px] text-zinc-900 font-black bg-amber-400 px-2.5 py-0.5">STEP 3</span>
+                    <h5 className="text-xs font-bold text-white uppercase">Verify "Gatekeeper" Files</h5>
+                  </div>
+                  <p className="text-zinc-400 leading-normal normal-case">
+                    Shopify will immediately reject a theme branch if it is missing its two mandatory core config assets. Check your repository to make sure these two elements exist:
                   </p>
                   
-                  <div className="relative group bg-zinc-950 border border-zinc-900 p-3 flex flex-col justify-between">
-                    <pre className="text-zinc-400 text-[10px] whitespace-pre overflow-x-auto text-left leading-normal selection:bg-amber-400/20">
+                  <div className="space-y-2">
+                    <div className="p-3 bg-zinc-950 border border-zinc-900">
+                      <div className="text-[#D1FF26] font-bold text-[10px] uppercase mb-1">Gatekeeper file 1: layout/theme.liquid</div>
+                      <p className="text-zinc-500 mb-2 normal-case leading-snug">Must contain the core Shopify header metadata hook and body render tags:</p>
+                      
+                      <div className="relative group bg-black/40 p-2.5 border border-zinc-900">
+                        <pre className="text-zinc-400 text-[10px] leading-snug">
 {`<!doctype html>
 <html>
   <head>
@@ -461,9 +526,9 @@ export default function UploadGuard({
     {{ content_for_layout }}
   </body>
 </html>`}
-                    </pre>
-                    <button
-                      onClick={() => handleCopy(`<!doctype html>
+                        </pre>
+                        <button
+                          onClick={() => handleCopy(`<!doctype html>
 <html>
   <head>
     {{ content_for_header }}
@@ -471,54 +536,27 @@ export default function UploadGuard({
   <body>
     {{ content_for_layout }}
   </body>
-</html>`, "theme-liquid-template")}
-                      className="absolute top-2 right-2 text-[9px] bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold border border-zinc-800 p-1.5 flex items-center gap-1 cursor-pointer"
-                    >
-                      {copiedTextPath === "theme-liquid-template" ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>COPIED</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" />
-                          <span>COPY TEMPLATE</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
+</html>`, "theme-liquid-template-2")}
+                          className="absolute top-2 right-2 text-[9px] bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold border border-zinc-800 px-2 py-1 cursor-pointer"
+                        >
+                          {copiedTextPath === "theme-liquid-template-2" ? "COPIED" : "COPY CODE"}
+                        </button>
+                      </div>
+                    </div>
 
-                {/* Step 3 card */}
-                <div className="p-4 border border-zinc-900 bg-[#080808] space-y-3">
-                  <div className="flex items-center gap-2 border-b border-zinc-900 pb-2">
-                    <span className="text-[10px] text-amber-400 font-extrabold bg-amber-500/10 px-2.5 py-1 border border-amber-500/20">STEP 3</span>
-                    <h5 className="text-xs font-bold text-white uppercase">Ensure settings_schema.json array init</h5>
-                  </div>
-                  <p className="text-zinc-400 leading-normal normal-case">
-                    If you don't have custom schema variables, configure an empty array brackets config to satisfy Shopify's gatekeeper validation.
-                  </p>
-                  
-                  <div className="relative group bg-zinc-950 border border-zinc-900 p-3 flex flex-col justify-between">
-                    <pre className="text-zinc-400 text-[10px] whitespace-pre overflow-x-auto text-left leading-normal">
-{`[]`}
-                    </pre>
-                    <button
-                      onClick={() => handleCopy(`[]`, "settings-schema-template")}
-                      className="absolute top-2 right-2 text-[9px] bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold border border-zinc-800 p-1.5 flex items-center gap-1 cursor-pointer"
-                    >
-                      {copiedTextPath === "settings-schema-template" ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>COPIED</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" />
-                          <span>COPY</span>
-                        </>
-                      )}
-                    </button>
+                    <div className="p-3 bg-zinc-950 border border-zinc-900">
+                      <div className="text-[#D1FF26] font-bold text-[10px] uppercase mb-1">Gatekeeper file 2: config/settings_schema.json</div>
+                      <p className="text-zinc-500 mb-2 normal-case leading-snug">Cannot be completely blank; it must at least contain a valid JSON block or an empty array symbol:</p>
+                      <div className="relative group bg-black/40 p-2.5 border border-zinc-900 flex justify-between items-center">
+                        <code className="text-zinc-400 font-black font-mono">[]</code>
+                        <button
+                          onClick={() => handleCopy(`[]`, "settings-schema-template-2")}
+                          className="text-[9px] bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold border border-zinc-800 px-2 py-1 cursor-pointer"
+                        >
+                          {copiedTextPath === "settings-schema-template-2" ? "COPIED" : "COPY JSON"}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
